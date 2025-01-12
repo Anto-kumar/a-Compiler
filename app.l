@@ -69,3 +69,70 @@
 [ \n\t]*	        ;
 
 
+
+"#"[ ]* {
+    char comment[1000];
+    int i = 0;
+    while(1) {
+        char c = input();
+        if(c == '\n' || c == EOF) {
+            comment[i] = '\0';
+            break;
+        }
+        comment[i++] = c;
+    }
+    printf("\nSingle Line Comment! The Comment is: \n");
+    printf("%s\n", comment);
+    return singlecmnt;
+}
+
+"/*"[ ] {
+    char comment[1000];
+    int i = 0;
+    while(1) {
+        char c = input();
+        if(c == '*') {
+            char d = input();
+            if(d == '/') {
+                comment[i++] = '\0';
+                break;
+            }
+            comment[i++] = (c == '\n') ? ' ' : c;
+            comment[i++] = (d == '\n') ? ' ' : c;
+        } else {
+            if(comment[i - 1] == '*' && c == '/') {
+                comment[i - 1] = '\0';
+                break;
+            }
+            comment[i++] = (c == '\n') ? ' ' : c;
+        }
+    }
+    printf("\nMultiline Comment! The Comment is: \n");
+    printf("%s\n", comment);
+    return multicmnt;
+}
+
+[A-Z|a-z]+[a-zA-Z0-9_]*	{ 
+
+	yylval.text = strdup(yytext);
+ 	return VAR;
+}  
+
+
+[+|-]?[0-9]+ {
+	yylval.integer = atoi(yytext); 	
+	return INTNUMBER;
+}
+
+[+|-]?[0-9]+[.][0-9]+		{
+    yylval.real = atof(yytext);
+	return REALNUMBER;
+}	
+
+\'[^'\\\*"]*\' 	{ 
+    yytext[strlen(yytext)-1] = '\0';
+	yylval.text = strdup(yytext+1);
+	return STRING ; 
+}	
+	
+%%
